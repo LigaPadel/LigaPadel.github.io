@@ -1,1 +1,244 @@
-ligapadel2024
+<!DOCTYPE html>
+<html lang="es"><head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liga de Pádel 2024</title>
+    <style>
+        body {
+            background-color: #272727;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        h2 {
+            margin-top: 30px;
+            color: #4CAF50;
+        }
+
+        table {
+            width: 80%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #444;
+            text-align: center;
+            padding: 10px;
+            background-color: #333;
+            color: #fff; /* Cambiado a blanco */
+        }
+
+        th {
+            background-color: #4CAF50;
+        }
+
+        /* Ajustar el ancho de las columnas de jugadores */
+        #resultsForm th:nth-child(3), #resultsForm td:nth-child(3),
+        #resultsForm th:nth-child(4), #resultsForm td:nth-child(4),
+        #resultsForm th:nth-child(5), #resultsForm td:nth-child(5),
+        #resultsForm th:nth-child(6), #resultsForm td:nth-child(6),
+        #clasificacion th:nth-child(1), #clasificacion td:nth-child(1),
+        #clasificacion th:nth-child(2), #clasificacion td:nth-child(2) {
+            width: 60px; /* Puedes ajustar este valor según tus necesidades */
+        }
+
+        textarea {
+            width: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #clasificacion {
+            width: 50%;
+            margin-top: 20px;
+            color: #fff; /* Cambiado a blanco */
+        }
+
+        #clasificacion th, #clasificacion td {
+            border: 1px solid #4CAF50;
+            text-align: center;
+            padding: 10px;
+            background-color: #333;
+            color: #fff; /* Cambiado a blanco */
+        }
+
+        #clasificacion th {
+            background-color: #4CAF50;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Liga de Pádel 2024</h2>
+<h2>Clasificación</h2>
+    <table id="clasificacion">
+        <tbody><tr>
+            <th>Jugador</th>
+            <th>Puntos</th>
+        </tr>
+        <tr>
+            <td>Kike</td>
+            <td id="puntosKike">1.0</td>
+        </tr>
+        <tr>
+            <td>Carlos</td>
+            <td id="puntosCarlos">1.0</td>
+        </tr>
+        <tr>
+            <td>Sergio</td>
+            <td id="puntosSergio">3.0</td>
+        </tr>
+        <tr>
+            <td>Edu</td>
+            <td id="puntosEdu">3.0</td>
+        </tr>
+        <!-- Resto de filas... -->
+    </tbody></table>
+
+    <script>
+        // ... (sin cambios en el script)
+        var jugadores = ["Kike", "Carlos", "Sergio", "Edu"];
+
+        function calcularPuntuacion() {
+            // Crear matriz para almacenar los resultados
+            var resultados = [];
+            var comentarios = [];
+            for (var i = 1; i <= 6; i++) {
+                resultados[i] = [];
+                comentarios[i] = document.forms["resultsForm"]["comments" + i].value;
+                for (var j = 1; j <= 4; j++) {
+                    var resultado = document.forms["resultsForm"]["result" + jugadores[j-1] + i].value;
+                    resultados[i][j] = resultado;
+                }
+            }
+
+            // Crear matriz para almacenar la puntuación de cada jugador
+            var puntos = [0, 0, 0, 0];
+
+            // Calcular puntuación para cada jugador
+            for (var i = 1; i <= 6; i++) {
+                for (var j = 1; j <= 4; j++) {
+                    var partes = resultados[i][j].split("-");
+                    var setsGanados = parseInt(partes[0]);
+                    var setsPerdidos = parseInt(partes[1]);
+
+                    if (setsGanados === 2 && setsPerdidos === 0) {
+                        // Ganado en dos sets
+                        puntos[j-1] += 3;
+                    } else if (setsGanados === 2 && setsPerdidos === 1) {
+                        // Ganado en tres sets
+                        puntos[j-1] += 2.5;
+                    } else if (setsPerdidos === 2 && setsGanados === 0) {
+                        // Perdido en dos sets
+                        puntos[j-1] += 1;
+                    } else if (setsPerdidos === 2 && setsGanados === 1) {
+                        // Perdido en tres sets
+                        puntos[j-1] += 1.5;
+                    } else if (setsGanados === 1 && setsPerdidos === 1) {
+                        // Empate
+                        puntos[j-1] += 1;
+                    }
+                }
+            }
+
+            // Actualizar la tabla de clasificación
+            document.getElementById("puntosKike").innerText = puntos[0].toFixed(1);
+            document.getElementById("puntosCarlos").innerText = puntos[1].toFixed(1);
+            document.getElementById("puntosSergio").innerText = puntos[2].toFixed(1);
+            document.getElementById("puntosEdu").innerText = puntos[3].toFixed(1);
+
+            // Mostrar comentarios
+            for (var i = 1; i <= 6; i++) {
+                alert("Comentarios del Partido " + i + ": " + comentarios[i]);
+            }
+        }
+    </script>
+    <button type="button" onclick="calcularPuntuacion()">Calcular Puntuación</button>
+    </form>
+
+    <form id="resultsForm">
+        <table>
+            <tbody><tr>
+                <th>Partido</th>
+                <th>Rivales</th>
+                <th>Kike</th>
+                <th>Carlos</th>
+                <th>Sergio</th>
+                <th>Edu</th>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td><textarea name="comments1" rows="3" placeholder="Comentarios">kike/carlos vs sergio/edu</textarea></td>
+                <td><input type="text" name="resultKike1" placeholder="Resultado" value="0-2"></td>
+                <td><input type="text" name="resultCarlos1" placeholder="Resultado" value="0-2"></td>
+                <td><input type="text" name="resultSergio1" placeholder="Resultado" value="2-0"></td>
+                <td><input type="text" name="resultEdu1" placeholder="Resultado" value="2-0"></td>
+            </tr>
+            <!-- Resto de filas... -->
+            <tr>
+                <td>2</td>
+                <td><textarea name="comments2" rows="3" placeholder="Comentarios">kike/sergio vs carlos/edu</textarea></td>
+                <td><input type="text" name="resultKike2" placeholder="Resultado"></td>
+                <td><input type="text" name="resultCarlos2" placeholder="Resultado"></td>
+                <td><input type="text" name="resultSergio2" placeholder="Resultado"></td>
+                <td><input type="text" name="resultEdu2" placeholder="Resultado"></td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td><textarea name="comments3" rows="3" placeholder="Comentarios">carlos/sergio vs kike/edu</textarea></td>
+                <td><input type="text" name="resultKike3" placeholder="Resultado"></td>
+                <td><input type="text" name="resultCarlos3" placeholder="Resultado"></td>
+                <td><input type="text" name="resultSergio3" placeholder="Resultado"></td>
+                <td><input type="text" name="resultEdu3" placeholder="Resultado"></td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td><textarea name="comments4" rows="3" placeholder="Comentarios">kike/carlos vs sergio/edu</textarea></td>
+                <td><input type="text" name="resultKike4" placeholder="Resultado"></td>
+                <td><input type="text" name="resultCarlos4" placeholder="Resultado"></td>
+                <td><input type="text" name="resultSergio4" placeholder="Resultado"></td>
+                <td><input type="text" name="resultEdu4" placeholder="Resultado"></td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td><textarea name="comments5" rows="3" placeholder="Comentarios">kike/sergio vs carlos/edu</textarea></td>
+                <td><input type="text" name="resultKike5" placeholder="Resultado"></td>
+                <td><input type="text" name="resultCarlos5" placeholder="Resultado"></td>
+                <td><input type="text" name="resultSergio5" placeholder="Resultado"></td>
+                <td><input type="text" name="resultEdu5" placeholder="Resultado"></td>
+            </tr>
+            <tr>
+                <td>6</td>
+                <td><textarea name="comments6" rows="3" placeholder="Comentarios">carlos/sergio vs kike/edu</textarea></td>
+                <td><input type="text" name="resultKike6" placeholder="Resultado"></td>
+                <td><input type="text" name="resultCarlos6" placeholder="Resultado"></td>
+                <td><input type="text" name="resultSergio6" placeholder="Resultado"></td>
+                <td><input type="text" name="resultEdu6" placeholder="Resultado"></td>
+            </tr>
+        </tbody></table>
+
+      
+    
+
+
+
+
+</body></html>
