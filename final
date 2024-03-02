@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Final de la Liga de Pádel</title>
+    <style>
+        body {
+            background-color: #272727;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1, h2 {
+            color: #4CAF50;
+            margin-top: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #333;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .jugadores, .resultados, .puntuacion-final {
+            width: 30%;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #fff;
+        }
+
+        .form-group input[type="text"] {
+            width: calc(50% - 10px);
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #444;
+            background-color: #333;
+            color: #fff;
+        }
+
+        .final-score {
+            margin-top: 40px;
+            color: #fff;
+        }
+
+        .final-score h2 {
+            margin-bottom: 20px;
+        }
+
+        .final-score table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .final-score th, .final-score td {
+            border: 1px solid #4CAF50;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .final-score th {
+            background-color: #4CAF50;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="jugadores">
+        <h1>Final de la Liga de Pádel</h1>
+
+        <div class="form-group">
+            <label for="pareja1">Pareja 1:</label>
+            <input type="text" id="pareja1" name="pareja1" placeholder="Ejemplo: Jugador1 / Jugador2">
+        </div>
+
+        <div class="form-group">
+            <label for="pareja2">Pareja 2:</label>
+            <input type="text" id="pareja2" name="pareja2" placeholder="Ejemplo: Jugador3 / Jugador4">
+        </div>
+    </div>
+
+    <div class="resultados">
+        <h2>Resultado</h2>
+
+        <div class="form-group">
+            <label for="set1Pareja1">Set 1 Pareja 1:</label>
+            <input type="text" id="set1Pareja1" name="set1Pareja1" placeholder="Ejemplo: 6">
+            <input type="text" id="set1Pareja2" name="set1Pareja2" placeholder="Ejemplo: 4">
+        </div>
+        <div class="form-group">
+            <label for="set2Pareja1">Set 2 Pareja 1:</label>
+            <input type="text" id="set2Pareja1" name="set2Pareja1" placeholder="Ejemplo: 7">
+            <input type="text" id="set2Pareja2" name="set2Pareja2" placeholder="Ejemplo: 5">
+        </div>
+        <div class="form-group">
+            <label for="set3Pareja1">Set 3 Pareja 1:</label>
+            <input type="text" id="set3Pareja1" name="set3Pareja1" placeholder="Ejemplo: 6">
+            <input type="text" id="set3Pareja2" name="set3Pareja2" placeholder="Ejemplo: 2">
+        </div>
+    </div>
+
+    <div class="puntuacion-final">
+        <h2>Puntuación Final</h2>
+        <table class="final-score">
+            <thead>
+            <tr>
+                <th>Jugador</th>
+                <th>Puntuación</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>Kike</td>
+                <td id="puntosKike">0</td>
+            </tr>
+            <tr>
+                <td>Carlos</td>
+                <td id="puntosCarlos">0</td>
+            </tr>
+            <tr>
+                <td>Sergio</td>
+                <td id="puntosSergio">0</td>
+            </tr>
+            <tr>
+                <td>Edu</td>
+                <td id="puntosEdu">0</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    // Código JavaScript para actualizar la puntuación final
+    // Aquí podrías realizar cálculos y actualizaciones de la puntuación final
+</script>
+
+</body>
+</html>
