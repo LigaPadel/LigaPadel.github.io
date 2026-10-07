@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Liga Padel 8 Jugadores</title>
+    <title>Liga Pádel 8 Jugadores</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; color: #333; }
         .container { max-width: 1000px; margin: 0 auto; }
@@ -19,19 +19,23 @@
         .score-input { width: 50px; padding: 5px; text-align: center; font-size: 16px; border: 1px solid #ccc; border-radius: 4px; }
         .btn { display: block; width: 100%; padding: 12px; background-color: #40916c; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
         .btn:hover { background-color: #2d6a4f; }
-        .btn-copy { background-color: #25D366; margin-top: 15px; }
+        .btn-save { background-color: #1d3557; margin-top: 15px; }
+        .btn-save:hover { background-color: #457b9d; }
+        .btn-copy { background-color: #25D366; margin-top: 10px; }
         .btn-copy:hover { background-color: #128C7E; }
         .tab-buttons { display: flex; gap: 10px; margin-bottom: 20px; }
         .tab-btn { flex: 1; padding: 10px; border: none; background: #ddd; border-radius: 6px; cursor: pointer; font-size: 16px; }
         .tab-btn.active { background: #2d6a4f; color: white; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
+        .status { text-align: center; font-weight: bold; margin-bottom: 10px; color: #2d6a4f; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>🏆 Liga de Pádel 8 Jugadores</h1>
+    <h1>🏆 Liga de Pádel 2026</h1>
+    <div id="status-msg" class="status">Cargando datos desde la nube...</div>
 
     <div class="tab-buttons">
         <button class="tab-btn active" onclick="showTab('clasificacion')">📊 Clasificación</button>
@@ -64,11 +68,21 @@
 
     <!-- TAB JORNADAS -->
     <div id="jornadas" class="tab-content">
-        <div class="card" id="contenedor-jornadas"></div>
+        <div class="card">
+            <div id="contenedor-jornadas"></div>
+            <button class="btn btn-save" onclick="guardarEnNube()">☁️ Guardar Resultados en la Nube</button>
+        </div>
     </div>
 </div>
 
 <script>
+// ==========================================
+// CONFIGURA AQUÍ TUS CLAVES DE JSONBIN.IO
+// ==========================================
+const BIN_ID = "6ac648a8ffd5d16053560d5f";
+const API_KEY = "$2a$10$p1iCErxNpeQ9XGqjRLD7OegIekTRkopUviUiYzua8INFaRE1CXuhG";
+// ==========================================
+
 const jugadores = ["Guille", "Sergio", "Richie", "Carlos", "Kike", "Hernan", "Jesus", "David"];
 
 const calendario = [
@@ -81,7 +95,7 @@ const calendario = [
     { j: 7, p1: [0, 7, 2, 4], p2: [1, 5, 3, 6] }
 ];
 
-let resultados = JSON.parse(localStorage.getItem('padel_resultados')) || {};
+let resultados = {};
 
 function showTab(tabId) {
     document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
@@ -90,21 +104,73 @@ function showTab(tabId) {
     event.target.classList.add('active');
 }
 
+async function cargarDesdeNube() {
+    const statusMsg = document.getElementById('status-msg');
+    try {
+        const response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+            headers: { 'X-Master-Key': API_KEY }
+        });
+        if (response.ok) {
+            const data = await response.json();
+            resultados = data.record || {};
+            statusMsg.innerText = "✅ Datos cargados correctamente";
+        } else {
+            statusMsg.innerText = "⚠️ No se pudieron cargar los datos de la nube.";
+        }
+    } catch (e) {
+        statusMsg.innerText = "⚠️ Error de conexión al cargar datos.";
+    }
+    renderJornadas();
+    calcularClasificacion();
+}
+
+async function guardarEnNube() {
+    const statusMsg = document.getElementById('status-msg');
+    statusMsg.innerText = "⏳ Guardando cambios en la nube...";
+    
+    // Recoger valores del formulario
+    calendario.forEach(j => {
+        ['p1', 'p2'].forEach(partidoId => {
+            const key = `j${j.j}_${partidoId}`;
+            const s1El = document.getElementById(`${key}_s1`);
+            const s2El = document.getElementById(`${key}_s2`);
+            if (s1El && s2El && s1El.value !== '' && s2El.value !== '') {
+                resultados[key] = { s1: parseInt(s1El.value), s2: parseInt(s2El.value) };
+            }
+        });
+    });
+
+    try {
+        const response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Master-Key': API_KEY
+            },
+            body: JSON.stringify(resultados)
+        });
+        if (response.ok) {
+            statusMsg.innerText = "✅ ¡Resultados guardados en la nube con éxito!";
+            alert("¡Resultados guardados! Todos los jugadores verán la clasificación actualizada.");
+            calcularClasificacion();
+        } else {
+            alert("Hubo un error al guardar en la nube.");
+        }
+    } catch (e) {
+        alert("Error de red al intentar guardar.");
+    }
+}
+
 function renderJornadas() {
     const container = document.getElementById('contenedor-jornadas');
     container.innerHTML = '<h2>Partidos por Jornada</h2>';
     
     calendario.forEach(j => {
         let html = `<h3>Jornada ${j.j}</h3>`;
-        
-        // Partido 1
         const resP1 = resultados[`j${j.j}_p1`] || { s1: '', s2: '' };
         html += crearFilaPartido(j.j, 'p1', j.p1, resP1);
-        
-        // Partido 2
         const resP2 = resultados[`j${j.j}_p2`] || { s1: '', s2: '' };
         html += crearFilaPartido(j.j, 'p2', j.p2, resP2);
-        
         container.innerHTML += html + '<hr>';
     });
 }
@@ -117,26 +183,12 @@ function crearFilaPartido(jornada, partidoId, p, res) {
     return `
         <div class="match-row">
             <span class="team">${t1}</span>
-            <input type="number" min="0" max="2" class="score-input" id="${key}_s1" value="${res.s1}" onchange="guardarResultado('${key}')">
+            <input type="number" min="0" max="2" class="score-input" id="${key}_s1" value="${res.s1}">
             <span> - </span>
-            <input type="number" min="0" max="2" class="score-input" id="${key}_s2" value="${res.s2}" onchange="guardarResultado('${key}')">
+            <input type="number" min="0" max="2" class="score-input" id="${key}_s2" value="${res.s2}">
             <span class="team team-right">${t2}</span>
         </div>
     `;
-}
-
-function guardarResultado(key) {
-    const s1 = document.getElementById(`${key}_s1`).value;
-    const s2 = document.getElementById(`${key}_s2`).value;
-    
-    if (s1 !== '' && s2 !== '') {
-        resultados[key] = { s1: parseInt(s1), s2: parseInt(s2) };
-    } else {
-        delete resultados[key];
-    }
-    
-    localStorage.setItem('padel_resultados', JSON.stringify(resultados));
-    calcularClasificacion();
 }
 
 function calcularClasificacion() {
@@ -226,11 +278,11 @@ function copiarWhatsApp() {
     });
 
     navigator.clipboard.writeText(texto);
-    alert("¡Clasificación copiada al portapapeles para pegar en WhatsApp!");
+    alert("¡Clasificación copiada al portapapeles para WhatsApp!");
 }
 
-renderJornadas();
-calcularClasificacion();
+// Cargar los datos al iniciar la página
+cargarDesdeNube();
 </script>
 </body>
 </html>
